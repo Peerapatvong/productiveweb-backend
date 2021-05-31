@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         type: DataTypes.STRING,
         allowNull: false,
-        // unique: true,
+        unique: true,
         validate: {
           isEmail: true,
         },
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       status: {
         type: DataTypes.ENUM,
-        values: ["MEMBER", "DELETED"],
+        values: ["ADMIN", "MEMBER", "DELETED"],
         allowNull: false,
       },
     },
@@ -48,16 +48,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   User.associate = (models) => {
-    User.hasMany(models.Task, {
-      foreignKey: {
-        name: "userId",
-        allowNull: false,
-      },
-      onUpdate: "RESTRICT",
-      onDelete: "RESTRICT",
-    });
-
-    User.hasMany(models.Booking, {
+    User.hasMany(models.Order, {
       foreignKey: {
         name: "userId",
         allowNull: false,

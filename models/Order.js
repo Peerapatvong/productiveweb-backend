@@ -1,22 +1,18 @@
 module.exports = (sequelize, DataTypes) => {
-  const BookingItem = sequelize.define(
-    "BookingItem",
+  const Order = sequelize.define(
+    "Order",
     {
-      timeBooking: {
+      paymentImage: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      DateBooking: {
-        type: DataTypes.DATEONLY,
-        allowNull: false,
-      },
-      amountHour: {
+      paymentBank: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      status: {
+      paymentStatus: {
         type: DataTypes.ENUM,
-        values: ["SELECTED", "DELETED"],
+        values: ["PENDING", "REJECT", "FAIL", "SUCCESS"],
         allowNull: false,
       },
     },
@@ -25,24 +21,24 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  BookingItem.associate = (models) => {
-    BookingItem.belongsTo(models.Consultant, {
+  Order.associate = (models) => {
+    Order.belongsTo(models.Course, {
       foreignKey: {
-        name: "consultantId",
+        name: "courseId",
         allowNull: false,
       },
       onUpdate: "RESTRICT",
       onDelete: "RESTRICT",
     });
 
-    BookingItem.belongsTo(models.Booking, {
+    Order.belongsTo(models.User, {
       foreignKey: {
-        name: "bookingId",
+        name: "userId",
         allowNull: false,
       },
       onUpdate: "RESTRICT",
       onDelete: "RESTRICT",
     });
   };
-  return BookingItem;
+  return Order;
 };

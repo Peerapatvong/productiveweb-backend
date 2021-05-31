@@ -1,22 +1,29 @@
 module.exports = (sequelize, DataTypes) => {
-  const Booking = sequelize.define(
-    "Booking",
+  const Course = sequelize.define(
+    "Course",
     {
-      paymentAmount: {
+      courseName: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      paymentImage: {
+      courseInfo: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      paymentBank: {
+      courseTeacher: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      paymentStatus: {
-        type: DataTypes.ENUM,
-        values: ["PENDING", "REJECT", "FAIL", "SUCCESS"],
+      coursePrice: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      coursePicture: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      courseVideo: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
     },
@@ -25,24 +32,24 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  Booking.associate = (models) => {
-    Booking.hasMany(models.BookingItem, {
+  Course.associate = (models) => {
+    Course.belongsTo(models.TypeCourse, {
       foreignKey: {
-        name: "bookingId",
+        name: "TypeCourseId",
         allowNull: false,
       },
       onUpdate: "RESTRICT",
       onDelete: "RESTRICT",
     });
 
-    Booking.belongsTo(models.User, {
+    Course.hasOne(models.Order, {
       foreignKey: {
-        name: "userId",
+        name: "courseId",
         allowNull: false,
       },
       onUpdate: "RESTRICT",
       onDelete: "RESTRICT",
     });
   };
-  return Booking;
+  return Course;
 };

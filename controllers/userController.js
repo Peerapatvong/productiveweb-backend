@@ -7,13 +7,14 @@ exports.protect = async (req, res, next) => {
     let token = null;
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer"))
       token = req.headers.authorization.split(" ")[1];
-
+      console.log(token)
     if (!token) return res.status(401).json({ message: "you are unauthorized" });
 
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne({ where: { id: payload.id } });
     if (!user) return res.status(400).json({ message: "user not found" });
     req.user = user;
+    console.log(req)
     next();
   } catch (err) {
     next(err);
@@ -46,26 +47,6 @@ exports.register = async (req, res, next) => {
   }
 };
 
-// exports.test = async (req, res, next) => {
-//   try {
-//     const testuser = {
-//       email: "game2@hotmail.com",
-//       password: "12345678",
-//       confirmPassword: "12345678",
-//       firstName: "Peerapat",
-//       lastName: "Vong",
-//       birthdate: "20-JAN-2000",
-//       gender: "MALE",
-//       phoneNumber: "0849969554",
-//       status: "MEMBER",
-//     };
-//     const user = await User.create(testuser);
-//     res.status(201).json({ message: "user add" });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -92,11 +73,23 @@ exports.login = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
   try {
     const { password, confirmPassword, firstName, lastName, birthdate, gender, phoneNumber } = req.body;
+    const hashedPassword = await bcrypt.hash(password, +process.env.BCRYPT_SALT);
+
     await User.update(
-      { password, confirmPassword, firstName, lastName, birthdate, gender, phoneNumber },
+      { password: hashedPassword, confirmPassword, firstName, lastName, birthdate, gender, phoneNumber },
       { where: { id: req.user.id } }
     );
     res.status(200).json({ message: "update user success" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getMe = async (req, res, next) => {
+  const { id } = req.user;
+  try {
+    const data = await User.findOne({ where: { id } });
+    res.status(200).json({ data });
   } catch (err) {
     next(err);
   }
